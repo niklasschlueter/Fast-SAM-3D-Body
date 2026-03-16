@@ -62,9 +62,6 @@ checkpoints/
 ### Run
 
 ```bash
-# Basic inference
-python demo_human.py --image_path ./notebook/images/dancing.jpg
-
 # Optimized (torch.compile + TensorRT)
 bash run_demo.sh
 ```
