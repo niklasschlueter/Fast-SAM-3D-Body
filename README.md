@@ -38,6 +38,52 @@ SAM 3D Body (3DB) achieves state-of-the-art accuracy in monocular 3D human mesh 
 
 ### Environment
 
+#### Option A: Pixi (recommended)
+
+[Pixi](https://pixi.sh) manages the full environment declaratively via `pyproject.toml`.
+
+**1. Install pixi**
+```bash
+curl -fsSL https://pixi.sh/install.sh | sh
+```
+
+**2. Install the environment**
+```bash
+pixi install
+pixi shell
+```
+
+This installs all conda and PyPI dependencies. Two packages require a separate one-time build step — run these manually inside the pixi shell:
+
+```bash
+bash tools/setup_chumpy.sh      # installs chumpy from GitHub (fixes broken PyPI build)
+bash tools/setup_detectron2.sh  # compiles detectron2 against the local CUDA toolkit (takes a few minutes)
+```
+
+> **Note:** Detectron2 compilation requires CUDA. On an RTX 5090 (sm_120) you need CUDA 12.8 — the `pyproject.toml` is already configured for this.
+
+**3. Log in to HuggingFace**
+
+The main model checkpoint is on a gated HuggingFace repo. Accept access at https://huggingface.co/facebook/sam-3d-body-dinov3, then authenticate:
+
+```bash
+python -c "from huggingface_hub import login; login()"
+```
+
+**4. Download model checkpoints**
+```bash
+bash tools/setup_checkpoints.sh
+```
+
+**5. Download YOLO weights**
+```bash
+python -c "from ultralytics import YOLO; YOLO('yolo11m-pose.pt')"
+mkdir -p checkpoints/yolo
+mv yolo11m-pose.pt checkpoints/yolo/
+```
+
+#### Option B: Conda (original)
+
 Please refer to [SAM 3D Body](https://github.com/facebookresearch/sam-3d-body) for environment setup, or use our setup script:
 
 ```bash
@@ -49,7 +95,7 @@ conda activate fast_sam_3d_body
 
 ```
 checkpoints/
-├── sam-3d-body-dinov3/       # Auto-downloaded from HuggingFace on first run
+├── sam-3d-body-dinov3/       # Downloaded via tools/setup_checkpoints.sh
 │   ├── model.ckpt
 │   └── assets/
 │       └── mhr_model.pt
@@ -63,7 +109,11 @@ checkpoints/
 ### Run
 
 ```bash
-# Optimized (torch.compile + TensorRT)
+# Without TensorRT (uses .pt weights, slower but no engine files needed)
+bash run_demo.sh
+
+# With TensorRT acceleration (see below)
+bash build_tensorrt.sh
 bash run_demo.sh
 ```
 
@@ -80,6 +130,22 @@ python convert_backbone_tensorrt.py --all
 ```
 
 All generated engines are stored under `./checkpoints/`.
+
+### Live RealSense Demo
+
+Run the model directly on a live Intel RealSense D435i/D455 stream:
+
+```bash
+python demo_realsense_live.py
+```
+
+A window will open showing 4 panels side by side: original frame, skeleton keypoints, mesh front view, and mesh side view. Press **Q** to quit.
+
+> **Note:** On NVIDIA workstations the H264 hardware encoder is unavailable. Use `record_realsense_mp4v.py` instead of `record_realsense.py` to record footage:
+> ```bash
+> python record_realsense_mp4v.py
+> ```
+> Output is saved to `output/records/<timestamp>/recording.mp4` along with a `recording.json` containing camera intrinsics.
 
 ## Real-World Deployment
 

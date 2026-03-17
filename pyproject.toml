@@ -1,0 +1,105 @@
+[project]
+name = "fast-sam-3d-body"
+version = "0.1.0"
+requires-python = "==3.11.*"
+
+[tool.pixi.workspace]
+name = "fast-sam-3d-body"
+channels = ["nvidia/label/cuda-12.8.0", "conda-forge"]
+platforms = ["linux-64"]
+
+# --- Conda dependencies ---
+[tool.pixi.dependencies]
+python = "3.11.*"
+pip = "*"
+cuda-toolkit = { version = "12.8.*", channel = "nvidia/label/cuda-12.8.0" }
+
+# --- PyPI extra index for PyTorch CUDA wheels ---
+[tool.pixi.pypi-options]
+extra-index-urls = ["https://download.pytorch.org/whl/cu128"]
+
+# --- PyPI dependencies ---
+[tool.pixi.pypi-dependencies]
+# PyTorch (CUDA 12.8 builds, required for RTX 5090 / sm_120)
+torch = "==2.7.0+cu128"
+torchvision = "==0.22.0+cu128"
+
+# Core ML / training
+pytorch-lightning = ">=2"
+einops = "*"
+timm = "*"
+roma = "*"
+fvcore = "*"
+optree = "*"
+
+# Detectron2 is installed via `pixi run install-detectron2` (requires compilation)
+
+# Human detection
+ultralytics = "*"
+
+# Monocular geometry estimation
+moge = { git = "https://github.com/microsoft/MoGe.git" }
+
+# 3D body / SMPL
+smplx = "*"
+# chumpy installed via tools/setup_chumpy.sh (activation script)
+
+# Vision / image processing
+opencv-python = "*"
+scikit-image = "*"
+pycocotools = "*"
+xtcocotools = "*"
+pyrender = "*"
+
+# Config / experiment management
+yacs = "*"
+hydra-core = "*"
+hydra-submitit-launcher = "*"
+hydra-colorlog = "*"
+pyrootutils = "*"
+
+# Data / IO
+numpy = "*"
+scipy = "*"
+pandas = "*"
+joblib = "*"
+dill = "*"
+webdataset = "*"
+jsonlines = "*"
+
+# Logging / visualization
+rich = "*"
+loguru = "*"
+seaborn = "*"
+tensorboard = "*"
+wandb = "*"
+
+# Networking / messaging
+networkx = "==3.2.1"
+chump = "*"
+pyzmq = "*"
+
+# Utils
+tqdm = "*"
+appdirs = "*"
+huggingface_hub = "*"
+ffmpeg = "*"
+
+# Dev tools
+cython = "*"
+pytest = "*"
+black = "*"
+
+# TensorRT / ONNX (optional, for .engine model conversion)
+tensorrt-cu12 = "*"
+tensorrt-cu12-bindings = "*"
+tensorrt-cu12-libs = "*"
+onnx = "*"
+onnxruntime-gpu = "*"
+nvtx = "*"
+
+# RealSense camera support
+pyrealsense2 = "*"
+
+[tool.pixi.activation]
+scripts = ["tools/setup_chumpy.sh", "tools/setup_detectron2.sh", "tools/setup_checkpoints.sh"]

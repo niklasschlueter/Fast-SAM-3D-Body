@@ -49,7 +49,7 @@ export MHR_NO_CORRECTIVES=1         # Disable correctives (faster)
 # ============================================================
 # FOV Estimator (MoGe2)
 # ============================================================
-export FOV_TRT=1                    # Use TensorRT encoder
+export FOV_TRT=0                    # Use TensorRT encoder
 export FOV_FAST=1                   # Fast mode (skip normal_head)
 export FOV_MODEL=s                  # Model size: s(35M), b(104M), l(331M)
 export FOV_LEVEL=0                  # Resolution level: 0-9 (0=1200 tokens, 9=3600 tokens)
@@ -80,7 +80,7 @@ export INTERM_TIMING=0            # Intermediate layer timing
 # ============================================================
 IMAGE_PATH=./notebook/images/dancing.jpg
 DETECTOR=yolo_pose
-DETECTOR_MODEL=./checkpoints/yolo/yolo11m-pose.engine
+DETECTOR_MODEL=./checkpoints/yolo/yolo11m-pose.pt
 HAND_BOX_SOURCE=yolo_pose
 
 # ============================================================
